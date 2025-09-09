@@ -12,4 +12,5 @@ interface PraticienRepositoryInterface
      *
      * @return array
      */
+        // public function findAll(): array;
 }

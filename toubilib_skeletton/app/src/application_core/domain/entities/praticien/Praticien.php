@@ -55,7 +55,7 @@ namespace toubilib\core\domain\entities\praticien;
      * Crée une entité Praticien depuis un tableau (ligne DB ou DTO).
      * Accepte 'specialite' comme string ou ['libelle'=>...], ou 'specialite_libelle'.
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data): Praticien
     {
         $spec = null;
         if (isset($data['specialite'])) {
@@ -68,7 +68,7 @@ namespace toubilib\core\domain\entities\praticien;
             $spec = (string)$data['specialite_libelle'];
         }
 
-        return new self(
+        return new Praticien(
             $data['id'] ?? null,
             (string)($data['nom'] ?? ''),
             (string)($data['prenom'] ?? ''),
