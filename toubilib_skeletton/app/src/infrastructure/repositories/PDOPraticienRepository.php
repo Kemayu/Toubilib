@@ -27,12 +27,12 @@ class PDOPraticienRepository implements PraticienRepositoryInterface
         $praticiens = [];
         foreach ($results as $element) {
             $praticiens[] = new Praticien(
-                $element->id,
-                $element->nom,
-                $element->prenom,
-                $element->ville,
-                $element->email,
-                $element->specialite
+                $element['id'],
+                $element['nom'],
+                $element['prenom'],
+                $element['ville'],
+                $element['email'],
+                $element['specialite']
             );
         }
         return $praticiens;
