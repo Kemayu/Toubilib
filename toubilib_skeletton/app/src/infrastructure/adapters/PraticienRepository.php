@@ -9,9 +9,7 @@ use toubilib\core\application\ports\spi\repositoryInterfaces\PraticienRepository
  * Entité domaine Praticien (architecture hexagonale)
  * Champs exposés pour la fonctionnalité 1 : nom, prénom, ville, email, spécialité.
  */
- class PraticienRepository implements PraticienRepositoryInterface
+ class PraticienRepository 
 {
-    public function findAll(): array{
-        
-    }
+  
 }

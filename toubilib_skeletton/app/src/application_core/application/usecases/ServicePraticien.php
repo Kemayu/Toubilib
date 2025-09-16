@@ -19,28 +19,7 @@ class ServicePraticien implements ServicePraticienInterface
      * @return Praticien[] 
      */
     public function listerPraticiens(): array
-    {
-
-        $result = $this->praticienRepository->findAll();
-
-        if (!is_array($result)) {
-            return [];
-        }
-
-        $praticiens = [];
-        foreach ($result as $item) {
-            if ($item instanceof Praticien) {
-                $praticiens[] = $item;
-                continue;
-            }
-
-            if (is_array($item)) {
-                $praticiens[] = Praticien::fromArray($item);
-                continue;
-            }
-
-        }
-
-        return $praticiens;
+    {       
+        return $this->praticienRepository->getAllPraticien();
     }
 }
