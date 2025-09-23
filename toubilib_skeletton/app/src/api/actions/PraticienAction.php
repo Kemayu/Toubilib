@@ -7,14 +7,14 @@ use toubilib\api\actions\AbstractAction;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
-use toubilib\core\application\usecases\ServicePraticien;
+
 
  class PraticienAction extends AbstractAction
 {
        protected ServicePraticienInterface $praticienService;
 
-    public function __construct() {
-        $this->praticienService = new ServicePraticien();
+    public function __construct(ServicePraticienInterface $praticienService) {
+        $this->praticienService = $praticienService;
     }
 
     public function __invoke(ServerRequestInterface $rq, ResponseInterface $rs, array $args): ResponseInterface {

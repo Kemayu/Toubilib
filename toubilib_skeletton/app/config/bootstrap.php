@@ -22,7 +22,12 @@ try {
     // continuer sans .env
 }
 
-$app = AppFactory::create();
+$builder = new ContainerBuilder();
+$builder->addDefinitions(__DIR__ . '/settings.php' );
+
+$c=$builder->build();
+$app = AppFactory::createFromContainer($c);
+
 
 $app->addBodyParsingMiddleware();
 $app->add(Cors::class);
