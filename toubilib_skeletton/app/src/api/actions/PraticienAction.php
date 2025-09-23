@@ -6,6 +6,7 @@ namespace toubilib\api\actions;
 use toubilib\api\actions\AbstractAction;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use toubilib\core\application\ports\api\dto\PraticienDTO;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
 
 
@@ -19,14 +20,14 @@ use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInt
 
     public function __invoke(ServerRequestInterface $rq, ResponseInterface $rs, array $args): ResponseInterface {
         $praticiens = $this->praticienService->listerPraticiens();
-        $praticiensArray = array_map(function($praticien) {
+        $praticiensArray = array_map(function(PraticienDTO $praticien) {
             return [
-                'id' => $praticien->getId(),
-                'nom' => $praticien->getNom(),
-                'prenom' => $praticien->getPrenom(),
-                'ville' => $praticien->getVille(),
-                'email' => $praticien->getEmail(),
-                'specialite_id' => $praticien->getSpecialite(),
+                'id' => $praticien->getNewStatus()->getId(),
+                'nom' => $praticien->getNewStatus()->getNom(),
+                'prenom' => $praticien->getNewStatus()->getPrenom(),
+                'ville' => $praticien->getNewStatus()->getVille(),
+                'email' => $praticien->getNewStatus()->getEmail(),
+                'specialite_id' => $praticien->getNewStatus()->getSpecialite(),
             ];
         }, $praticiens);
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace toubilib\core\application\ports\spi\repositoryInterfaces;
 
+use toubilib\core\application\ports\api\dto\PraticienDTO;
 use toubilib\core\domain\entities\praticien\Praticien;
 
 interface ServicePraticienInterface

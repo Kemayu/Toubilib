@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace toubilib\core\application\dto;
+namespace toubilib\core\application\ports\api\dto;
 
 use toubilib\core\domain\entities\praticien\Praticien;
 
@@ -17,4 +17,6 @@ use toubilib\core\domain\entities\praticien\Praticien;
         return $this->praticien;
     }
 
+
+   
 }
