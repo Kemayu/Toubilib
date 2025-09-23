@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use toubilib\core\application\ports\api\dto\PraticienDTO;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
+use toubilib\core\domain\entities\praticien\Praticien;
 
 
  class ListerPraticienAction extends AbstractAction
@@ -21,14 +22,7 @@ use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInt
     public function __invoke(ServerRequestInterface $rq, ResponseInterface $rs, array $args): ResponseInterface {
         $praticiens = $this->praticienService->listerPraticiens();
         $praticiensArray = array_map(function(PraticienDTO $praticien) {
-            return [
-                'id' => $praticien->getNewStatus()->getId(),
-                'nom' => $praticien->getNewStatus()->getNom(),
-                'prenom' => $praticien->getNewStatus()->getPrenom(),
-                'ville' => $praticien->getNewStatus()->getVille(),
-                'email' => $praticien->getNewStatus()->getEmail(),
-                'specialite_id' => $praticien->getNewStatus()->getSpecialite(),
-            ];
+            return $praticien->toArray();
         }, $praticiens);
 
         $rs->getBody()->write(json_encode($praticiensArray));

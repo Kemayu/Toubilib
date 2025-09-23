@@ -32,7 +32,13 @@ class PDOPraticienRepository implements PraticienRepositoryInterface
                 $element['prenom'],
                 $element['ville'],
                 $element['email'],
-                $element['specialite_id']
+                $element['telephone'],
+                $element['specialite_id'],
+                $element['structure_id'],
+                $element['rpps_id'],
+                $element['organisation'],
+                $element['nouveau_patient'],
+                $element['titre']
             );
         }
         return $praticiens;

@@ -24,7 +24,7 @@ class ServicePraticien implements ServicePraticienInterface
         $praticiens = $this->praticienRepository->getAllPraticien();
         $praticienDTO = [];
         foreach($praticiens as $praticien){
-            $praticienDTO[] = new PraticienDTO($praticien);
+            $praticienDTO[] = new PraticienDTO($praticien->getId(), $praticien->getNom(), $praticien->getPrenom(),$praticien->getVille(),$praticien->getEmail(),$praticien->getSpecialiteId());
         }
         return $praticienDTO; 
     }
