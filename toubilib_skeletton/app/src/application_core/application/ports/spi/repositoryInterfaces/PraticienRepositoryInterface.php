@@ -14,4 +14,6 @@ interface PraticienRepositoryInterface
      */
 
     public function getAllPraticien(): array;
+
+    public function getPraticienById(string $id): ?array;
 }

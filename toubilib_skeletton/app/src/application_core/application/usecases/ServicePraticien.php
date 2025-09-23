@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace toubilib\core\application\usecases;
 
+use toubilib\core\application\ports\api\dto\PraticienDetailDTO;
 use toubilib\core\application\ports\api\dto\PraticienDTO;
 use toubilib\core\domain\entities\praticien\Praticien;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
@@ -27,5 +28,14 @@ class ServicePraticien implements ServicePraticienInterface
             $praticienDTO[] = new PraticienDTO($praticien->getId(), $praticien->getNom(), $praticien->getPrenom(),$praticien->getVille(),$praticien->getEmail(),$praticien->getSpecialiteId());
         }
         return $praticienDTO; 
+    }
+
+     public function getPraticienDetail(string $id): ?PraticienDetailDTO
+    {
+        $data = $this->praticienRepository->getPraticienById($id);
+        if ($data === null) {
+            return null;
+        }
+        return PraticienDetailDTO::fromArray($data);
     }
 }
