@@ -10,7 +10,7 @@ use toubilib\core\application\ports\api\dto\PraticienDTO;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
 
 
- class PraticienAction extends AbstractAction
+ class ListerPraticienAction extends AbstractAction
 {
        protected ServicePraticienInterface $praticienService;
 

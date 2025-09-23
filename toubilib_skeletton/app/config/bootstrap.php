@@ -24,6 +24,8 @@ try {
 
 $builder = new ContainerBuilder();
 $builder->addDefinitions(__DIR__ . '/settings.php' );
+$builder->addDefinitions(__DIR__ . '/service.php');
+$builder->addDefinitions(__DIR__ . '/api.php');
 
 $c=$builder->build();
 $app = AppFactory::createFromContainer($c);
