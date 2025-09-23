@@ -41,4 +41,22 @@ class PgRdvRepository implements RdvRepositoryInterface
 
         return $rows ?: [];
     }
+
+    public function findById(string $id): ?array
+    {
+        $sql = 'SELECT id, praticien_id, patient_id, patient_email, date_heure_debut, date_heure_fin, duree, status, motif_visite, date_creation
+                FROM rdv
+                WHERE id = :id
+                LIMIT 1';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($this->logger) {
+            $this->logger->debug('PgRdvRepository: fetched rdv by id', ['id' => $id, 'found' => (bool)$row]);
+        }
+
+        return $row ?: null;
+    }
 }
