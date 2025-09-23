@@ -4,6 +4,8 @@ use Psr\Container\ContainerInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
 use toubilib\core\application\usecases\ServicePraticien;
 use toubilib\infra\repositories\PDOPraticienRepository;
+use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
+use toubilib\infra\repositories\PgRdvRepository;
 
 return [
 // service
@@ -21,5 +23,7 @@ return [
     },
 
     PDOPraticienRepository::class => fn(ContainerInterface $c) => new PDOPraticienRepository($c->get('toubilib.pdo')),
+    // rdv infra
+    RdvRepositoryInterface::class => fn(ContainerInterface $c) => new PgRdvRepository($c->get('toubilib.pdo')),
     
 ];
