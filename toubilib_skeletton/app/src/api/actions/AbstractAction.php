@@ -1,6 +1,6 @@
 <?php
 
-namespace jira\api\actions;
+namespace toubilib\api\actions;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
