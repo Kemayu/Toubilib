@@ -20,25 +20,12 @@ class PDOPraticienRepository implements PraticienRepositoryInterface
     public function getAllPraticien(): array
     {
 
-        $stmt = $this->pdo->query('SELECT p.id, p.nom, p.prenom, p.ville, p.email, p.telephone, p.specialite_id FROM praticien p ORDER BY p.nom, p.prenom');
+        $stmt = $this->pdo->query('SELECT p.id, p.nom, p.prenom, p.ville, p.email, p.telephone, p.specialite_id, p.structure_id, p.rpps_id, p.organisation, p.nouveau_patient, p.titre FROM praticien p ORDER BY p.nom, p.prenom');
         $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         $praticiens = [];
         foreach ($results as $element) {
-            $praticiens[] = new Praticien(
-                $element['id'],
-                $element['nom'],
-                $element['prenom'],
-                $element['ville'],
-                $element['email'],
-                $element['telephone'],
-                $element['specialite_id'],
-                $element['structure_id'],
-                $element['rpps_id'],
-                $element['organisation'],
-                $element['nouveau_patient'],
-                $element['titre']
-            );
+            $praticiens[] = Praticien::fromArray($element);
         }
         return $praticiens;
     }
