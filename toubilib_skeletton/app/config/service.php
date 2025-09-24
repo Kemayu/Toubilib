@@ -6,11 +6,17 @@ use toubilib\core\application\usecases\ServicePraticien;
 use toubilib\infra\repositories\PDOPraticienRepository;
 use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
 use toubilib\infra\repositories\PgRdvRepository;
+use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
+use toubilib\core\application\usecases\ServiceRendezVous;
 
 return [
 // service
     ServicePraticienInterface::class => function (ContainerInterface $c) {
         return new ServicePraticien($c->get(PDOPraticienRepository::class));
+    },
+        // service rendez-vous
+    ServiceRendezVousInterface::class => function (ContainerInterface $c) {
+        return new ServiceRendezVous($c->get(RdvRepositoryInterface::class));
     },
 
     // infra
@@ -25,5 +31,7 @@ return [
     PDOPraticienRepository::class => fn(ContainerInterface $c) => new PDOPraticienRepository($c->get('toubilib.pdo')),
     // rdv infra
     RdvRepositoryInterface::class => fn(ContainerInterface $c) => new PgRdvRepository($c->get('toubilib.pdo')),
+
+   
     
 ];

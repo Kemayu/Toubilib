@@ -6,15 +6,16 @@ namespace toubilib\api\actions;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
+use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
 use Slim\Psr7\Factory\StreamFactory;
 
 class ListerRDVbyId
 {
-    private RdvRepositoryInterface $rdvRepository;
+    private ServiceRendezVousInterface $serviceRendezVous;
 
-    public function __construct(RdvRepositoryInterface $rdvRepository)
+    public function __construct(ServiceRendezVousInterface $serviceRendezVous)
     {
-        $this->rdvRepository = $rdvRepository;
+        $this->serviceRendezVous = $serviceRendezVous;
     }
 
     public function __invoke(ServerRequestInterface $rq, ResponseInterface $rs, array $args): ResponseInterface
@@ -26,7 +27,7 @@ class ListerRDVbyId
             return $rs->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
 
-        $rdv = $this->rdvRepository->findById($id);
+    $rdv = $this->serviceRendezVous->getRdvById($id);
         if (!$rdv) {
             $rs->getBody()->write(json_encode(['error' => 'not found']));
             return $rs->withStatus(404)->withHeader('Content-Type', 'application/json');
