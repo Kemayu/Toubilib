@@ -7,6 +7,8 @@ use toubilib\api\actions\ListerCreneauDejaPraticien;
 use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
 use toubilib\api\actions\ListerRDVbyId;
+use toubilib\api\actions\CreateRdvAction;
+use toubilib\api\middlewares\ValidateInputRdv;
 
 return [
 // application
@@ -18,5 +20,12 @@ return [
     },
     ListerRDVbyId::class => function (ContainerInterface $c) {
         return new ListerRDVbyId($c->get(ServiceRendezVousInterface::class));
+    },
+    CreateRdvAction::class => function (ContainerInterface $c) {
+        return new CreateRdvAction($c->get(ServiceRendezVousInterface::class));
+    },
+    // middleware
+    ValidateInputRdv::class => function (ContainerInterface $c) {
+        return new ValidateInputRdv();
     },
 ];

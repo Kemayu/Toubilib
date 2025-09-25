@@ -20,8 +20,11 @@ class CreateRdvAction extends AbstractAction
 
     public function __invoke(ServerRequestInterface $rq, ResponseInterface $rs, array $args): ResponseInterface
     {
-        $body = (array)$rq->getParsedBody();
-        $dto = InputRendezVousDTO::fromArray($body);
+        $dto = $rq->getAttribute('inputRdv');
+        if (!$dto instanceof InputRendezVousDTO) {
+            $rs->getBody()->write(json_encode(['error' => 'invalid_request', 'message' => 'Données manquantes ou middleware non appliqué'], JSON_UNESCAPED_UNICODE));
+            return $rs->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
 
         $result = $this->service->creerRendezVous($dto);
 
