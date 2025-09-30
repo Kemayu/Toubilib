@@ -16,4 +16,6 @@ interface RdvRepositoryInterface
     public function existsPatientById(string $patientId): bool;
 
     public function getMotifsForPraticien(string $praticienId): array;
+
+    public function updateRendezVous(string $id, array $data): bool;
 }

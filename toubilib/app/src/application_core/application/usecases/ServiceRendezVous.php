@@ -6,6 +6,7 @@ namespace toubilib\core\application\usecases;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
 use toubilib\core\application\ports\api\dto\InputRendezVousDTO;
+use toubilib\core\domain\entities\rdv\RendezVous;
 
 class ServiceRendezVous implements ServiceRendezVousInterface
 {
@@ -44,6 +45,12 @@ class ServiceRendezVous implements ServiceRendezVousInterface
             $fin = $debut->modify('+' . (int)$data['duree'] . ' minutes');
         } catch (\Throwable $e) {
             return ['success' => false, 'code' => 'invalid_datetime', 'message' => 'Date/heure invalide'];
+        }
+
+        // empêcher la création d'un RDV dans le passé
+        $now = new \DateTimeImmutable();
+        if ($debut <= $now) {
+            return ['success' => false, 'code' => 'rdv_in_past', 'message' => 'Impossible de créer un RDV dans le passé'];
         }
 
         // si praticien existe
@@ -120,5 +127,34 @@ class ServiceRendezVous implements ServiceRendezVousInterface
         }
 
         return ['success' => true, 'id' => $savedId];
+    }
+
+    public function annulerRendezVous(string $id): ?array
+    {
+        $rdv = $this->rdvRepository->findById($id);
+        if ($rdv === null) {
+            return ['success' => false, 'code' => 'rdv_not_found', 'message' => 'Rendez-vous introuvable'];
+        }
+
+        try {
+            $rendezVousEntity = new RendezVous($rdv);
+            $rendezVousEntity->annuler();
+        } catch (\RuntimeException $e) {
+            $code = $e->getMessage();
+            if ($code === 'rdv_already_cancelled') {
+                return ['success' => false, 'code' => 'rdv_already_cancelled', 'message' => 'Rendez-vous déjà annulé'];
+            }
+            if ($code === 'rdv_in_past') {
+                return ['success' => false, 'code' => 'rdv_in_past', 'message' => 'Impossible d\'annuler un RDV passé'];
+            }
+            return ['success' => false, 'code' => 'annulation_error', 'message' => 'Erreur annulation'];
+        }
+
+        $updated = $this->rdvRepository->updateRendezVous($id, ['status' => 2]);
+        if (!$updated) {
+            return ['success' => false, 'code' => 'save_failed', 'message' => 'Échec sauvegarde annulation'];
+        }
+
+        return ['success' => true, 'id' => $id];
     }
 }

@@ -16,6 +16,7 @@ return function(App $app): App {
     $app->get('/rdvs/{id}', ListerRDVbyId::class);
      $app->get('/praticiens/{id}', PraticienDetailAction::class);
     $app->post('/rdvs', CreateRdvAction::class)->add(ValidateInputRdv::class);
+    $app->delete('/rdvs/{id}', \toubilib\api\actions\AnnulerRdvAction::class);
 
 
     return $app;
