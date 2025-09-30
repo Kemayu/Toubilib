@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use toubilib\core\application\ports\api\dto\PraticienDTO;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
-use toubilib\core\domain\entities\praticien\Praticien;
 
 
  class ListerPraticienAction extends AbstractAction

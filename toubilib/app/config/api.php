@@ -4,7 +4,6 @@ use Psr\Container\ContainerInterface;
 use toubilib\api\actions\ListerPraticienAction;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
 use toubilib\api\actions\ListerCreneauDejaPraticien;
-use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
 use toubilib\api\actions\ListerRDVbyId;
 use toubilib\api\actions\CreateRdvAction;

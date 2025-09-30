@@ -5,9 +5,7 @@ namespace toubilib\api\actions;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
-use Slim\Psr7\Factory\StreamFactory;
 
 class ListerRDVbyId
 {

@@ -6,11 +6,7 @@ namespace toubilib\api\actions;
 use toubilib\api\actions\AbstractAction;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use toubilib\core\application\ports\api\dto\PraticienDTO;
-use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
-use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Slim\Psr7\Factory\StreamFactory;
 
 

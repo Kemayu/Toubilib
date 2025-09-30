@@ -5,7 +5,6 @@ namespace toubilib\core\application\usecases;
 
 use toubilib\core\application\ports\api\dto\PraticienDetailDTO;
 use toubilib\core\application\ports\api\dto\PraticienDTO;
-use toubilib\core\domain\entities\praticien\Praticien;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\PraticienRepositoryInterface;
 class ServicePraticien implements ServicePraticienInterface
