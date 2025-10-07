@@ -38,14 +38,14 @@ final class RendezVous
      */
     public function annuler(): void
     {
-        if ($this->status === 2) {
+        if ($this->status === 1) {
             throw new \RuntimeException('rdv_already_cancelled');
         }
         $now = new \DateTimeImmutable();
         if ($this->debut <= $now) {
             throw new \RuntimeException('rdv_in_past');
         }
-        $this->status = 2;
+        $this->status = 1;
     }
 
     public function toArray(): array

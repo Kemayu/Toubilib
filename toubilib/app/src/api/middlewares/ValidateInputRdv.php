@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use Slim\Psr7\Factory\StreamFactory;
+use Slim\Psr7\Response;
 use toubilib\core\application\ports\api\dto\InputRendezVousDTO;
 
 final class ValidateInputRdv implements MiddlewareInterface
@@ -34,7 +34,6 @@ final class ValidateInputRdv implements MiddlewareInterface
             $errors[] = 'date_heure_debut est requis';
         } else {
             try {
-               
                 new \DateTimeImmutable($dateRaw);
             } catch (\Throwable $e) {
                 $errors[] = 'date_heure_debut invalide';
@@ -45,7 +44,6 @@ final class ValidateInputRdv implements MiddlewareInterface
             $errors[] = 'duree invalide';
         }
 
-     
         $datasorted = [
             'praticien_id' => $praticien,
             'patient_id' => $patient,
@@ -55,15 +53,12 @@ final class ValidateInputRdv implements MiddlewareInterface
         ];
 
         if (!empty($errors)) {
-            $body = json_encode(['errors' => $errors], JSON_UNESCAPED_UNICODE);
-            $stream = (new StreamFactory())->createStream($body);
-            $resp = new \Slim\Psr7\Response(422);
-            return $resp->withBody($stream)->withHeader('Content-Type', 'application/json');
+            $resp = new Response(422);
+            $resp->getBody()->write(json_encode(['errors' => $errors], JSON_UNESCAPED_UNICODE));
+            return $resp->withHeader('Content-Type', 'application/json');
         }
 
         $dto = InputRendezVousDTO::fromArray($datasorted);
-
-      
         $request = $request->withAttribute('inputRdv', $dto);
 
         return $handler->handle($request);

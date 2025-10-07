@@ -17,10 +17,22 @@ interface ServiceRendezVousInterface
      */
     public function getRdvById(string $id): ?array;
 
-    public function creerRendezVous(InputRendezVousDTO $dto): ?array;
+    /**
+     * @return array<string,mixed>
+     */
+    public function creerRendezVous(InputRendezVousDTO $dto): array;
 
     /**
      * @return array<string,mixed>|null
      */
     public function annulerRendezVous(string $id): ?array;
+
+    /**
+     * Met à jour le statut d'un rendez-vous
+     * 
+     * @param string $rdvId
+     * @param int $newStatus 0=planifié, 1=annulé, 2=honoré, 3=non_honoré
+     * @return array<string,mixed> ['success' => bool, 'code' => string, 'message' => string, 'rdv' => array|null]
+     */
+    public function updateRdvStatus(string $rdvId, int $newStatus): array;
 }

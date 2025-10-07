@@ -190,4 +190,19 @@ class PgRdvRepository implements RdvRepositoryInterface
             return false;
         }
     }
+
+    public function updateStatus(string $id, int $status): bool
+    {
+        $sql = 'UPDATE rdv SET status = :status WHERE id = :id';
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['id' => $id, 'status' => $status]);
+            return $stmt->rowCount() > 0;
+        } catch (\Throwable $e) {
+            if ($this->logger) {
+                $this->logger->error('PgRdvRepository: updateStatus failed', ['id' => $id, 'status' => $status, 'err' => $e->getMessage()]);
+            }
+            return false;
+        }
+    }
 }

@@ -178,11 +178,46 @@ class ServiceRendezVous implements ServiceRendezVousInterface
             return ['success' => false, 'code' => 'annulation_error', 'message' => 'Erreur annulation'];
         }
 
-        $updated = $this->rdvRepository->updateRendezVous($id, ['status' => 2]);
+        $updated = $this->rdvRepository->updateRendezVous($id, ['status' => 1]);
         if (!$updated) {
             return ['success' => false, 'code' => 'save_failed', 'message' => 'Échec sauvegarde annulation'];
         }
 
         return ['success' => true, 'id' => $id];
+    }
+
+    public function updateRdvStatus(string $rdvId, int $newStatus): array
+    {
+        // vérifier que le status est valide (0-3)
+        if (!in_array($newStatus, [0, 1, 2, 3], true)) {
+            return ['success' => false, 'code' => 'invalid_status', 'message' => 'Statut invalide (attendu: 0-3)'];
+        }
+
+        $rdv = $this->rdvRepository->findById($rdvId);
+        if (!$rdv) {
+            return ['success' => false, 'code' => 'rdv_not_found', 'message' => 'Rendez-vous introuvable'];
+        }
+
+        $currentStatus = (int)($rdv['status'] ?? 0);
+
+        // règles de transition (0 = planifié peut devenir 1/2/3, les autres sont terminaux)
+        $allowedTransitions = [
+            0 => [1, 2, 3], // planifié → annulé/honoré/non_honoré
+            1 => [],        // annulé = terminal
+            2 => [],        // honoré = terminal
+            3 => [],        // non_honoré = terminal
+        ];
+
+        if (!isset($allowedTransitions[$currentStatus]) || !in_array($newStatus, $allowedTransitions[$currentStatus], true)) {
+            return ['success' => false, 'code' => 'invalid_transition', 'message' => "Transition de status $currentStatus vers $newStatus non autorisée"];
+        }
+
+        $updated = $this->rdvRepository->updateStatus($rdvId, $newStatus);
+        if (!$updated) {
+            return ['success' => false, 'code' => 'update_failed', 'message' => 'Échec de la mise à jour'];
+        }
+
+        $rdv = $this->rdvRepository->findById($rdvId);
+        return ['success' => true, 'rdv' => $rdv];
     }
 }
