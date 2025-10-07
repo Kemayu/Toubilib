@@ -18,4 +18,9 @@ interface ServiceRendezVousInterface
     public function getRdvById(string $id): ?array;
 
     public function creerRendezVous(InputRendezVousDTO $dto): ?array;
+
+    /**
+     * @return array<string,mixed>|null
+     */
+    public function annulerRendezVous(string $id): ?array;
 }

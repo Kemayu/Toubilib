@@ -20,12 +20,15 @@ class PgRdvRepository implements RdvRepositoryInterface
 
     public function findCreneauxPraticien(string $praticienId, string $from, string $to): array
     {
-        $sql = 'SELECT id, praticien_id, patient_id, patient_email, date_heure_debut, date_heure_fin, duree, status, motif_visite
-                FROM rdv
-                WHERE praticien_id = :praticien_id
-                  AND date_heure_debut >= :from
-                  AND date_heure_debut <= :to
-                ORDER BY date_heure_debut ASC';
+                // Exclure les rendez-vous annulés (status = 2) afin que les créneaux libérés
+                // par une annulation soient considérés comme disponibles.
+                $sql = 'SELECT id, praticien_id, patient_id, patient_email, date_heure_debut, date_heure_fin, duree, status, motif_visite
+                                FROM rdv
+                                WHERE praticien_id = :praticien_id
+                                    AND date_heure_debut >= :from
+                                    AND date_heure_debut <= :to
+                                    AND (status IS NULL OR status <> 2)
+                                ORDER BY date_heure_debut ASC';
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -154,6 +157,37 @@ class PgRdvRepository implements RdvRepositoryInterface
                 $this->logger->warning('getMotifsForPraticien failed', ['praticienId' => $praticienId, 'err' => $e->getMessage()]);
             }
             return [];
+        }
+    }
+
+    public function updateRendezVous(string $id, array $data): bool
+    {
+        if (empty($id) || empty($data)) {
+            return false;
+        }
+
+        $sets = [];
+        $params = [':id' => $id];
+        foreach ($data as $k => $v) {
+            // protection basique du nom de colonne
+            $col = preg_replace('/[^a-z0-9_]/i', '', $k);
+            $sets[] = "{$col} = :{$col}";
+            $params[":{$col}"] = $v;
+        }
+
+        $sql = 'UPDATE rdv SET ' . implode(', ', $sets) . ' WHERE id = :id';
+        $stmt = $this->pdo->prepare($sql);
+        try {
+            $ok = $stmt->execute($params);
+            if ($this->logger) {
+                $this->logger->debug('PgRdvRepository: updated rdv', ['id' => $id, 'ok' => $ok, 'data' => $data]);
+            }
+            return (bool)$ok;
+        } catch (\Throwable $e) {
+            if ($this->logger) {
+                $this->logger->error('PgRdvRepository: update failed', ['id' => $id, 'err' => $e->getMessage()]);
+            }
+            return false;
         }
     }
 }
