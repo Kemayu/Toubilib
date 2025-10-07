@@ -1,6 +1,7 @@
 <?php
 
 use Psr\Container\ContainerInterface;
+use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePatientInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInterface;
 use toubilib\core\application\usecases\ServicePraticien;
 use toubilib\infra\repositories\PDOPraticienRepository;
@@ -9,8 +10,13 @@ use toubilib\infra\repositories\PgRdvRepository;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
 use toubilib\core\application\usecases\ServiceRendezVous;
 
+// nouveaux imports pour patient
+use toubilib\core\application\ports\spi\repositoryInterfaces\PatientRepositoryInterface;
+use toubilib\infra\repositories\PDOPatientRepository;
+use toubilib\core\application\usecases\ServicePatient;
+
 return [
-// service
+        // service
     ServicePraticienInterface::class => function (ContainerInterface $c) {
         return new ServicePraticien($c->get(PDOPraticienRepository::class));
     },
@@ -19,8 +25,16 @@ return [
         return new ServiceRendezVous($c->get(RdvRepositoryInterface::class));
     },
 
+        // service patient
+ 
+    ServicePatientInterface::class => function (ContainerInterface $c) {
+        return new ServicePatient($c->get(PatientRepositoryInterface::class));
+    },
+
+
+
     // infra
-     'toubilib.pdo' => function (ContainerInterface $c) {
+    'toubilib.pdo' => function (ContainerInterface $c) {
         $config = parse_ini_file($c->get('toubilib.db.config'));
         $dsn = "{$config['driver']}:host={$config['host']};dbname={$config['database']}";
         $user = $config['username'];
@@ -29,9 +43,10 @@ return [
     },
 
     PDOPraticienRepository::class => fn(ContainerInterface $c) => new PDOPraticienRepository($c->get('toubilib.pdo')),
-    // rdv infra
+        // rdv infra
     RdvRepositoryInterface::class => fn(ContainerInterface $c) => new PgRdvRepository($c->get('toubilib.pdo')),
 
-   
-    
+        // mapping concret pour PDOPatientRepository (optionnel mais pratique)
+    PDOPatientRepository::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubilib.pdo')),
+    PatientRepositoryInterface::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubilib.pdo')),
 ];

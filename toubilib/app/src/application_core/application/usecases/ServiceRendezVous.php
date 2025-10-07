@@ -18,7 +18,35 @@ class ServiceRendezVous implements ServiceRendezVousInterface
 
     public function listerCreneauxPraticien(string $praticienId, string $from, string $to): array
     {
-        return $this->rdvRepository->findCreneauxPraticien($praticienId, $from, $to);
+        $rows = $this->rdvRepository->findCreneauxPraticien($praticienId, $from, $to);
+        $out = [];
+        foreach ($rows as $r) {
+            $debutRaw = $r['date_heure_debut'] ?? null;
+            $finRaw = $r['date_heure_fin'] ?? null;
+
+            $debut = $debutRaw ? new \DateTimeImmutable($debutRaw) : null;
+            $fin = $finRaw ? new \DateTimeImmutable($finRaw) : null;
+
+            $status = isset($r['status']) ? strtolower((string)$r['status']) : '';
+            $annule = in_array($status, ['annule', 'annulé', 'cancelled', 'canceled', '1', 'true', 't'], true);
+
+            $patientId = $r['patient_id'] ?? null;
+
+            $out[] = [
+                'id' => $r['id'] ?? null,
+                'date' => $debut ? $debut->format('Y-m-d') : null,
+                'heure_debut' => $debut ? $debut->format('H:i:s') : null,
+                'heure_fin' => $fin ? $fin->format('H:i:s') : null,
+                'duree' => isset($r['duree']) ? (int)$r['duree'] : null,
+                'motif' => $r['motif_visite'] ?? null,
+                'annule' => $annule,
+                'status' => $r['status'] ?? null,
+                'patient_id' => $patientId,
+                'patient_email' => $r['patient_email'] ?? null,
+                'patient_link' => $patientId ? '/patients/' . $patientId : null,
+            ];
+        }
+        return $out;
     }
 
     public function getRdvById(string $id): ?array
