@@ -9,6 +9,7 @@ use toubilib\api\actions\ListerRDVbyId;
 use toubilib\api\actions\CreateRdvAction;
 use toubilib\api\actions\AnnulerRdvAction;
 use toubilib\api\middlewares\ValidateInputRdv;
+use toubilib\api\middlewares\Cors;
 
 return [
 // application
@@ -27,8 +28,21 @@ return [
     AnnulerRdvAction::class => function (ContainerInterface $c) {
         return new AnnulerRdvAction($c->get(ServiceRendezVousInterface::class));
     },
-    // middleware
+    
+    // middlewares
     ValidateInputRdv::class => function (ContainerInterface $c) {
         return new ValidateInputRdv();
+    },
+    
+    Cors::class => function (ContainerInterface $c) {
+        
+        return new Cors(
+            allowedOrigins: ['*'],  // ['http://localhost:6080']
+            allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+            maxAge: 3600,  //1h
+            allowCredentials: true, 
+            strictMode: true 
+        );
     },
 ];

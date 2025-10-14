@@ -6,7 +6,7 @@ use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInt
 use toubilib\core\application\usecases\ServicePraticien;
 use toubilib\infra\repositories\PDOPraticienRepository;
 use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
-use toubilib\infra\repositories\PgRdvRepository;
+use toubilib\infra\repositories\PDORdvRepository;
 use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousInterface;
 use toubilib\core\application\usecases\ServiceRendezVous;
 
@@ -67,10 +67,14 @@ return [
     },
 
     PDOPraticienRepository::class => fn(ContainerInterface $c) => new PDOPraticienRepository($c->get('toubiprat.pdo')),
-        // rdv infra
-    RdvRepositoryInterface::class => fn(ContainerInterface $c) => new PgRdvRepository($c->get('toubirdv.pdo')),
+    
+    RdvRepositoryInterface::class => fn(ContainerInterface $c) => new PDORdvRepository(
+        $c->get('toubirdv.pdo'),  
+        $c->get('toubiprat.pdo'),  
+        $c->get('toubipat.pdo')    
+    ),
 
-        // mapping concret pour PDOPatientRepository (optionnel mais pratique)
     PDOPatientRepository::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubipat.pdo')),
+
     PatientRepositoryInterface::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubipat.pdo')),
 ];

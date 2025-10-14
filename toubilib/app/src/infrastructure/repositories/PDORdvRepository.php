@@ -6,31 +6,47 @@ namespace toubilib\infra\repositories;
 use Psr\Log\LoggerInterface;
 use toubilib\core\application\ports\spi\repositoryInterfaces\RdvRepositoryInterface;
 
-class PgRdvRepository implements RdvRepositoryInterface
+class PDORdvRepository implements RdvRepositoryInterface
 {
-    private \PDO $pdo;
+    private \PDO $pdoRdv;
+    private \PDO $pdoPrat;
+    private \PDO $pdoPat;
     private ?LoggerInterface $logger;
 
-    public function __construct(\PDO $pdo, ?LoggerInterface $logger = null)
+    public function __construct(
+        \PDO $pdoRdv,
+        \PDO $pdoPrat,
+        \PDO $pdoPat,
+        ?LoggerInterface $logger = null
+    )
     {
-        $this->pdo = $pdo;
+        $this->pdoRdv = $pdoRdv;
+        $this->pdoPrat = $pdoPrat;
+        $this->pdoPat = $pdoPat;
         $this->logger = $logger;
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdoRdv->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
     public function findCreneauxPraticien(string $praticienId, string $from, string $to): array
     {
-                // Exclure les rendez-vous annulés (status = 2) afin que les créneaux libérés
-                // par une annulation soient considérés comme disponibles.
-                $sql = 'SELECT id, praticien_id, patient_id, patient_email, date_heure_debut, date_heure_fin, duree, status, motif_visite
-                                FROM rdv
-                                WHERE praticien_id = :praticien_id
-                                    AND date_heure_debut >= :from
-                                    AND date_heure_debut <= :to
-                                    AND (status IS NULL OR status <> 2)
-                                ORDER BY date_heure_debut ASC';
+        if ($this->logger) {
+            $this->logger->debug('[PDORdvRepository] findCreneauxPraticien', [
+                'praticien_id' => $praticienId,
+                'from' => $from,
+                'to' => $to
+            ]);
+        }
+        //status 1 rdv annulé
+        $sql = '
+            SELECT * FROM rdv 
+            WHERE praticien_id = :praticien_id
+              AND date_heure_debut >= :from
+              AND date_heure_debut < :to
+              AND (status IS NULL OR status <> 1)
+            ORDER BY date_heure_debut ASC
+        ';
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdoRdv->prepare($sql);
         $stmt->execute([
             ':praticien_id' => $praticienId,
             ':from' => $from,
@@ -40,7 +56,7 @@ class PgRdvRepository implements RdvRepositoryInterface
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         if ($this->logger) {
-            $this->logger->debug('PgRdvRepository: fetched creneaux', ['count' => count($rows), 'praticien' => $praticienId, 'from' => $from, 'to' => $to]);
+            $this->logger->debug('PDORdvRepository: fetched creneaux', ['count' => count($rows), 'praticien' => $praticienId, 'from' => $from, 'to' => $to]);
         }
 
         return $rows ?: [];
@@ -53,12 +69,12 @@ class PgRdvRepository implements RdvRepositoryInterface
                 WHERE id = :id
                 LIMIT 1';
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdoRdv->prepare($sql);
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($this->logger) {
-            $this->logger->debug('PgRdvRepository: fetched rdv by id', ['id' => $id, 'found' => (bool)$row]);
+            $this->logger->debug('PDORdvRepository: fetched rdv by id', ['id' => $id, 'found' => (bool)$row]);
         }
 
         return $row ?: null;
@@ -70,7 +86,7 @@ class PgRdvRepository implements RdvRepositoryInterface
             (id, praticien_id, patient_id, date_heure_debut, date_heure_fin, duree, motif_visite, date_creation, patient_email)
             VALUES (:id, :praticien_id, :patient_id, :date_heure_debut, :date_heure_fin, :duree, :motif_visite, :date_creation, :patient_email)';
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdoRdv->prepare($sql);
 
         $params = [
             ':id' => $data['id'],
@@ -87,12 +103,12 @@ class PgRdvRepository implements RdvRepositoryInterface
         try {
             $ok = $stmt->execute($params);
             if ($this->logger) {
-                $this->logger->debug('PgRdvRepository: saved rdv', ['id' => $data['id'], 'ok' => $ok]);
+                $this->logger->debug('PDORdvRepository: saved rdv', ['id' => $data['id'], 'ok' => $ok]);
             }
             return $ok ? $data['id'] : null;
         } catch (\Throwable $e) {
             if ($this->logger) {
-                $this->logger->error('PgRdvRepository: save failed', ['error' => $e->getMessage()]);
+                $this->logger->error('PDORdvRepository: save failed', ['error' => $e->getMessage()]);
             }
             return null;
         }
@@ -105,7 +121,7 @@ class PgRdvRepository implements RdvRepositoryInterface
             return false;
         }
         $sql = 'SELECT 1 FROM praticien WHERE id = :id LIMIT 1';
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdoPrat->prepare($sql);
         $stmt->execute(['id' => $praticienId]);
         return (bool)$stmt->fetchColumn();
     }
@@ -120,7 +136,7 @@ class PgRdvRepository implements RdvRepositoryInterface
         foreach ($tables as $t) {
             try {
                 $sql = "SELECT 1 FROM {$t} WHERE id = :id LIMIT 1";
-                $stmt = $this->pdo->prepare($sql);
+                $stmt = $this->pdoPat->prepare($sql);
                 $stmt->execute(['id' => $patientId]);
                 if ($stmt->fetchColumn()) {
                     return true;
@@ -141,7 +157,7 @@ class PgRdvRepository implements RdvRepositoryInterface
                 JOIN motif_visite mv ON mv.id = p2m.motif_id
                 WHERE p2m.praticien_id = :pid
             ';
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdoPrat->prepare($sql);
             $stmt->execute(['pid' => $praticienId]);
             $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             $out = [];
@@ -176,16 +192,16 @@ class PgRdvRepository implements RdvRepositoryInterface
         }
 
         $sql = 'UPDATE rdv SET ' . implode(', ', $sets) . ' WHERE id = :id';
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdoRdv->prepare($sql);
         try {
             $ok = $stmt->execute($params);
             if ($this->logger) {
-                $this->logger->debug('PgRdvRepository: updated rdv', ['id' => $id, 'ok' => $ok, 'data' => $data]);
+                $this->logger->debug('PDORdvRepository: updated rdv', ['id' => $id, 'ok' => $ok, 'data' => $data]);
             }
             return (bool)$ok;
         } catch (\Throwable $e) {
             if ($this->logger) {
-                $this->logger->error('PgRdvRepository: update failed', ['id' => $id, 'err' => $e->getMessage()]);
+                $this->logger->error('PDORdvRepository: update failed', ['id' => $id, 'err' => $e->getMessage()]);
             }
             return false;
         }
@@ -195,12 +211,12 @@ class PgRdvRepository implements RdvRepositoryInterface
     {
         $sql = 'UPDATE rdv SET status = :status WHERE id = :id';
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdoRdv->prepare($sql);
             $stmt->execute(['id' => $id, 'status' => $status]);
             return $stmt->rowCount() > 0;
         } catch (\Throwable $e) {
             if ($this->logger) {
-                $this->logger->error('PgRdvRepository: updateStatus failed', ['id' => $id, 'status' => $status, 'err' => $e->getMessage()]);
+                $this->logger->error('PDORdvRepository: updateStatus failed', ['id' => $id, 'status' => $status, 'err' => $e->getMessage()]);
             }
             return false;
         }
