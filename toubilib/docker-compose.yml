@@ -17,34 +17,56 @@ services:
     networks:
       - toubilib.net
     depends_on:
-      - toubiprati.db
-      # - toubiauth.db
+      - toubiprat.db
+      - toubiauth.db
     command: sh -c "composer install && php -S 0.0.0.0:80 -t /var/php/public"
 
     # service toubiprat.db : base de données postgresql pour les praticiens
 
-  toubiprati.db:
+  toubiprat.db:
     image: 'postgres:latest'
-    env_file: ./toubipratdb.env
+    env_file: ./env/toubipratdb.env
     ports:
       - '5432:5432'
     networks:
       - toubilib.net
     volumes:
       # - ./sql:/var/sql
-      - ./sql:/docker-entrypoint-initdb.d/
+      - ./sql/prati:/docker-entrypoint-initdb.d/
+
+  toubiauth.db:
+    image: 'postgres:latest'
+    env_file: ./env/toubiauthdb.env
+    ports:
+      - '5436:5432'
+    networks:
+      - toubilib.net
+    volumes:
+     # - ./sql:/var/sql
+      - ./sql/auth:/docker-entrypoint-initdb.d/
 
 
-  # toubirdv.db:
-  #   image: 'postgres:latest'
-  #   env_file: ./toubirdvdb.env
-  #   ports:
-  #     - '5434:5432'
-  #   networks:
-  #     - toubilib.net
-  #   volumes:
-  #     - ./sql:/var/sql
+  toubirdv.db:
+    image: 'postgres:latest'
+    env_file: ./env/toubirdvdb.env
+    ports:
+       - '5434:5432' 
+    networks: 
+       - toubilib.net
+    volumes:
+      # - ./sql:/var/sql
+       - ./sql/rdv:/docker-entrypoint-initdb.d/
 
+  toubipat.db: 
+    image: 'postgres:latest'
+    env_file: ./env/toubipatdb.env
+    ports:
+      - '5438:5432'
+    networks:
+      - toubilib.net
+    volumes:
+      # - ./sql:/var/sql
+      - ./sql/pat:/docker-entrypoint-initdb.d/
 
   #
   # service administration des bases sql

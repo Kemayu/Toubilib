@@ -34,19 +34,43 @@ return [
 
 
     // infra
-    'toubilib.pdo' => function (ContainerInterface $c) {
-        $config = parse_ini_file($c->get('toubilib.db.config'));
+    'toubiprat.pdo' => function (ContainerInterface $c) {
+        $config = parse_ini_file($c->get('toubiprat.db.config'));
         $dsn = "{$config['driver']}:host={$config['host']};dbname={$config['database']}";
         $user = $config['username'];
         $password = $config['password'];
         return new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
     },
 
-    PDOPraticienRepository::class => fn(ContainerInterface $c) => new PDOPraticienRepository($c->get('toubilib.pdo')),
+    'toubiauth.pdo' => function (ContainerInterface $c) {
+        $config = parse_ini_file($c->get('toubiauth.db.config'));
+        $dsn = "{$config['driver']}:host={$config['host']};dbname={$config['database']}";
+        $user = $config['username'];
+        $password = $config['password'];
+        return new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+    },
+
+    'toubirdv.pdo' => function (ContainerInterface $c) {
+        $config = parse_ini_file($c->get('toubirdv.db.config'));
+        $dsn = "{$config['driver']}:host={$config['host']};dbname={$config['database']}";
+        $user = $config['username'];
+        $password = $config['password'];
+        return new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+    },
+
+    'toubipat.pdo' => function (ContainerInterface $c) {
+        $config = parse_ini_file($c->get('toubipat.db.config'));
+        $dsn = "{$config['driver']}:host={$config['host']};dbname={$config['database']}";
+        $user = $config['username'];
+        $password = $config['password'];
+        return new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+    },
+
+    PDOPraticienRepository::class => fn(ContainerInterface $c) => new PDOPraticienRepository($c->get('toubiprat.pdo')),
         // rdv infra
-    RdvRepositoryInterface::class => fn(ContainerInterface $c) => new PgRdvRepository($c->get('toubilib.pdo')),
+    RdvRepositoryInterface::class => fn(ContainerInterface $c) => new PgRdvRepository($c->get('toubirdv.pdo')),
 
         // mapping concret pour PDOPatientRepository (optionnel mais pratique)
-    PDOPatientRepository::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubilib.pdo')),
-    PatientRepositoryInterface::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubilib.pdo')),
+    PDOPatientRepository::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubipat.pdo')),
+    PatientRepositoryInterface::class => fn(ContainerInterface $c) => new PDOPatientRepository($c->get('toubipat.pdo')),
 ];
