@@ -23,7 +23,10 @@ class ListerCreneauDejaPraticien extends AbstractAction
         $to = $rq->getQueryParams()['to'] ?? null;
 
         if (!$praticienId) {
-            $rs->getBody()->write(json_encode(['error' => 'missing parameters, require praticienId'], JSON_UNESCAPED_UNICODE));
+            $rs->getBody()->write(json_encode([
+                'error' => 'missing_parameter',
+                'message' => 'Le paramètre praticienId est requis'
+            ], JSON_UNESCAPED_UNICODE));
             return $rs->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
 
@@ -36,7 +39,52 @@ class ListerCreneauDejaPraticien extends AbstractAction
 
         $creneaux = $this->serviceRendezVous->listerCreneauxPraticien($praticienId, $from, $to);
 
-        $rs->getBody()->write(json_encode(['data' => $creneaux], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        return $rs->withHeader('Content-Type', 'application/json');
+        $creneauxHateoas = [];
+        foreach ($creneaux as $creneau) {
+            $rdvId = $creneau['id'] ?? null;
+            $patientId = $creneau['patient_id'] ?? null;
+            $status = (int)($creneau['status'] ?? 0);
+
+            $item = [
+                'id' => $rdvId,
+                'date' => $creneau['date'] ?? null,
+                'heure_debut' => $creneau['heure_debut'] ?? null,
+                'heure_fin' => $creneau['heure_fin'] ?? null,
+                'duree' => $creneau['duree'] ?? null,
+                'motif' => $creneau['motif'] ?? null,
+                'status' => $status,
+                'patient_id' => $patientId,
+                'patient_email' => $creneau['patient_email'] ?? null,
+                'links' => [
+                    'self' => ['href' => '/rdvs/' . $rdvId],
+                    'patient' => ['href' => '/patients/' . $patientId]
+                ]
+            ];
+
+            if ($status === 0) {
+                $item['links']['annuler'] = [
+                    'href' => '/rdvs/' . $rdvId,
+                    'method' => 'PATCH',
+                    'body' => ['status' => 1]
+                ];
+                $item['links']['honorer'] = [
+                    'href' => '/rdvs/' . $rdvId,
+                    'method' => 'PATCH',
+                    'body' => ['status' => 2]
+                ];
+                $item['links']['ne_pas_honorer'] = [
+                    'href' => '/rdvs/' . $rdvId,
+                    'method' => 'PATCH',
+                    'body' => ['status' => 3]
+                ];
+            }
+
+            $creneauxHateoas[] = $item;
+        }
+
+        $response = ['data' => $creneauxHateoas];
+
+        $rs->getBody()->write(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        return $rs->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }

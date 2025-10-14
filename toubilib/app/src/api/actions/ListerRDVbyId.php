@@ -38,7 +38,6 @@ class ListerRDVbyId extends AbstractAction
             return $rs->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
 
-        // Construction de la réponse HATEOAS
         $status = (int)($rdv['status'] ?? 0);
         $praticienId = (string)($rdv['praticien_id'] ?? '');
         $patientId = (string)($rdv['patient_id'] ?? '');
@@ -71,8 +70,7 @@ class ListerRDVbyId extends AbstractAction
             ]
         ];
 
-        // Ajouter les actions disponibles selon le statut
-        if ($status === 0) { // planifié → peut être modifié
+        if ($status === 0) {
             $response['links']['annuler'] = [
                 'href' => '/rdvs/' . $rdv['id'],
                 'method' => 'PATCH',
