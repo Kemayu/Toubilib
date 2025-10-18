@@ -162,6 +162,12 @@ INSERT INTO "patient" ("id", "nom", "prenom", "date_naissance", "adresse", "code
 ('9c8bddf1-2db8-3828-8783-0ae801c8b9a0',	'Petit',	'Vincent',	'1988-06-03',	'42, boulevard Benoit',	'27237',	'Robert',	'Vincent.Petit@club-internet.fr',	'02 30 70 06 31'),
 ('7cd42153-7105-32a3-8ebe-346be593bd91',	'Hardy',	'Étienne',	'1954-03-03',	'76, avenue Dominique Pereira',	'02539',	'Henry',	'Étienne.Hardy@hotmail.fr',	'+33 9 78 23 33 42'),
 ('5c86d5d8-1997-3c99-ba56-dd51edb4983e',	'Olivier',	'David',	'1946-10-10',	'975, impasse Danielle Colin',	'34116',	'Robin',	'David.Olivier@noos.fr',	'+33 7 87 78 65 00'),
-('5abcdbc4-90c9-3b86-82a3-c4cf1f7377d0',	'Alves',	'Marguerite',	'1950-07-05',	'chemin de Gilbert',	'88853',	'Charpentier',	'Marguerite.Alves@gmail.com',	'+33 3 65 84 20 04');
+('5abcdbc4-90c9-3b86-82a3-c4cf1f7377d0',	'Alves',	'Marguerite',	'1950-07-05',	'chemin de Gilbert',	'88853',	'Charpentier',	'Marguerite.Alves@gmail.com',	'+33 3 65 84 20 04'),
 
+-- ============================================================================
+-- PATIENTS DE TEST POUR JWT (toubiauth)
+-- ============================================================================
+('a0000001-0000-4000-8000-000000000001',	'Test',	'Patient1',	'1990-01-01',	'1 rue Test',	'75001',	'Paris',	'patient1@test.com',	'0612345678'),
+('a0000002-0000-4000-8000-000000000002',	'Test',	'Patient2',	'1992-02-02',	'2 rue Test',	'75002',	'Paris',	'patient2@test.com',	'0612345679');
+-- ============================================================================
 -- 2025-06-30 12:30:14.990322+00

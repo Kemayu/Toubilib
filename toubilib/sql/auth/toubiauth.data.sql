@@ -127,6 +127,26 @@ INSERT INTO "users" ("id", "email", "password", "role") VALUES
 ('581b1a86-e5ac-3f81-9a98-f87aa0fbf718',	'David.Fabre@laposte.net',	'$2y$12$vhEUAv.P5vbBGuaWi3Tgkut7Jk9oDEqbsRgI/6Vo9EzEuQRn/q1MO',	10),
 ('2e1c1158-c565-3780-aeed-2845063e415c',	'Nol.Dias@free.fr',	'$2y$12$6yBqQKy7H7zYTwJcGaxH7.xW8GdFyt0j9otR357upAtFBS86E11JG',	10),
 ('d6021537-72b7-3289-bfe7-efa9b4281b73',	'Gilbert.Bertrand@club-internet.fr',	'$2y$12$mI2fibyNiDgs3ZOoxnlzmu7IuZd9wwBGkKKwL/ZpKZMM4daEJLfOG',	10),
-('1e67bfd0-fd1a-362a-be57-6b212c76cfb6',	'dith.Didier@club-internet.fr',	'$2y$12$4I8islmimTjnqLvqPWtn6eS.R0TT/ABw8Icndc.iAMex96s61ucWK',	10);
+('1e67bfd0-fd1a-362a-be57-6b212c76cfb6',	'dith.Didier@club-internet.fr',	'$2y$12$4I8islmimTjnqLvqPWtn6eS.R0TT/ABw8Icndc.iAMex96s61ucWK',	10),
+
+-- ============================================================================
+-- UTILISATEURS DE TEST POUR JWT AUTHENTICATION
+-- Password pour tous les utilisateurs de test : "password123"
+-- Hash bcrypt: $2y$12$p3LcfJYqYeWuGfxHp1xpeeBIZMoOirI3QQDg37qzYBZQI.yrIsfcK
+-- ============================================================================
+
+-- Patients de test (role = 1)
+('a0000001-0000-4000-8000-000000000001',	'patient1@test.com',	'$2y$12$p3LcfJYqYeWuGfxHp1xpeeBIZMoOirI3QQDg37qzYBZQI.yrIsfcK',	1),
+('a0000002-0000-4000-8000-000000000002',	'patient2@test.com',	'$2y$12$p3LcfJYqYeWuGfxHp1xpeeBIZMoOirI3QQDg37qzYBZQI.yrIsfcK',	1),
+
+-- Praticiens de test (role = 10)
+('b0000001-0000-4000-8000-000000000010',	'praticien1@test.com',	'$2y$12$p3LcfJYqYeWuGfxHp1xpeeBIZMoOirI3QQDg37qzYBZQI.yrIsfcK',	10),
+('b0000002-0000-4000-8000-000000000020',	'praticien2@test.com',	'$2y$12$p3LcfJYqYeWuGfxHp1xpeeBIZMoOirI3QQDg37qzYBZQI.yrIsfcK',	10),
+
+-- Administrateur de test (role = 100)
+('c0000000-0000-4000-8000-000000000100',	'admin@test.com',	'$2y$12$p3LcfJYqYeWuGfxHp1xpeeBIZMoOirI3QQDg37qzYBZQI.yrIsfcK',	100);
+
+-- ============================================================================
+
 
 -- 2025-06-30 12:33:37.480892+00

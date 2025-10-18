@@ -5,7 +5,7 @@ namespace toubilib\infra\repositories;
 
 use toubilib\core\application\ports\spi\repositoryInterfaces\AuthRepositoryInterface;
 
-class PgAuthRepository implements AuthRepositoryInterface
+class PDOAuthRepository implements AuthRepositoryInterface
 {
     private \PDO $pdo;
 
@@ -34,7 +34,7 @@ class PgAuthRepository implements AuthRepositoryInterface
                 'role' => (int)$row['role'],
             ];
         } catch (\Throwable $e) {
-            error_log('PgAuthRepository error: ' . $e->getMessage());
+            error_log('PDOAuthRepository error: ' . $e->getMessage());
             return null;
         }
     }
