@@ -55,24 +55,29 @@ class AuthzMiddleware implements MiddlewareInterface
         return match ($routeName) {
             'agenda' => $this->authzService->canAccessAgenda(
                 $user,
-                $routeArgs['id-praticien'] ?? ''
+                $routeArgs['praticienId'] ?? ''
             ),
             
             'rdv.get' => $this->authzService->canAccessRdv(
                 $user,
-                $routeArgs['id-rdv'] ?? ''
+                $routeArgs['id'] ?? ''
             ),
             
             'rdv.create' => $this->authzService->canCreateRdv($user),
             
             'rdv.update' => $this->authzService->canUpdateRdv(
                 $user,
-                $routeArgs['id-rdv'] ?? ''
+                $routeArgs['id'] ?? ''
             ),
             
             'rdv.delete' => $this->authzService->canDeleteRdv(
                 $user,
-                $routeArgs['id-rdv'] ?? ''
+                $routeArgs['id'] ?? ''
+            ),
+            
+            'patient.consultations' => $this->authzService->canAccessHistorique(
+                $user,
+                $routeArgs['patientId'] ?? ''
             ),
             
             default => false,

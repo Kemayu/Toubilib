@@ -220,4 +220,16 @@ class ServiceRendezVous implements ServiceRendezVousInterface
         $rdv = $this->rdvRepository->findById($rdvId);
         return ['success' => true, 'rdv' => $rdv];
     }
+
+    public function getHistoriqueConsultations(string $patientId): array
+    {
+        $rdvs = $this->rdvRepository->getRendezVousByPatientId($patientId);
+        
+        $dtos = [];
+        foreach ($rdvs as $rdv) {
+            $dtos[] = \toubilib\core\application\ports\api\dto\RendezVousHistoriqueDTO::fromArray($rdv);
+        }
+        
+        return $dtos;
+    }
 }

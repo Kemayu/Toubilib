@@ -35,4 +35,12 @@ interface ServiceRendezVousInterface
      * @return array<string,mixed> ['success' => bool, 'code' => string, 'message' => string, 'rdv' => array|null]
      */
     public function updateRdvStatus(string $rdvId, int $newStatus): array;
+
+    /**
+     * Récupère l'historique des consultations d'un patient
+     * 
+     * @param string $patientId
+     * @return array<int,\toubilib\core\application\ports\api\dto\RendezVousHistoriqueDTO>
+     */
+    public function getHistoriqueConsultations(string $patientId): array;
 }

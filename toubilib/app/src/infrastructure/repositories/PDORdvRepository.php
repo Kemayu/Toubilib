@@ -80,6 +80,12 @@ class PDORdvRepository implements RdvRepositoryInterface
         return $row ?: null;
     }
 
+    public function getRendezVousById(string $id): ?array
+    {
+        // Alias de findById pour AuthzService
+        return $this->findById($id);
+    }
+
     public function saveRendezVous(array $data): ?string
     {
         $sql = 'INSERT INTO rdv
@@ -219,6 +225,73 @@ class PDORdvRepository implements RdvRepositoryInterface
                 $this->logger->error('PDORdvRepository: updateStatus failed', ['id' => $id, 'status' => $status, 'err' => $e->getMessage()]);
             }
             return false;
+        }
+    }
+
+    public function getRendezVousByPatientId(string $patientId): array
+    {
+        if ($this->logger) {
+            $this->logger->debug('[PDORdvRepository] getRendezVousByPatientId', ['patient_id' => $patientId]);
+        }
+
+        // Récupérer les RDV du patient
+        $sql = '
+            SELECT id, praticien_id, patient_id, patient_email, date_heure_debut, 
+                   date_heure_fin, duree, status, motif_visite, date_creation
+            FROM rdv
+            WHERE patient_id = :patient_id
+            ORDER BY date_heure_debut DESC
+        ';
+
+        try {
+            $stmt = $this->pdoRdv->prepare($sql);
+            $stmt->execute([':patient_id' => $patientId]);
+            $rdvs = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($this->logger) {
+                $this->logger->debug('PDORdvRepository: fetched rdvs for patient', ['count' => count($rdvs), 'patient_id' => $patientId]);
+            }
+
+            // Enrichir avec les infos praticien
+            $result = [];
+            foreach ($rdvs as $rdv) {
+                $praticienId = $rdv['praticien_id'];
+                
+                // Récupérer les infos du praticien
+                $sqlPrat = 'SELECT id, nom, prenom, specialite_id FROM praticien WHERE id = :id LIMIT 1';
+                $stmtPrat = $this->pdoPrat->prepare($sqlPrat);
+                $stmtPrat->execute([':id' => $praticienId]);
+                $praticien = $stmtPrat->fetch(\PDO::FETCH_ASSOC);
+
+                if ($praticien) {
+                    // Récupérer le libellé de la spécialité
+                    $sqlSpec = 'SELECT libelle FROM specialite WHERE id = :id LIMIT 1';
+                    $stmtSpec = $this->pdoPrat->prepare($sqlSpec);
+                    $stmtSpec->execute([':id' => $praticien['specialite_id']]);
+                    $specialite = $stmtSpec->fetchColumn();
+
+                    $result[] = [
+                        'id' => $rdv['id'],
+                        'date_heure_debut' => $rdv['date_heure_debut'],
+                        'date_heure_fin' => $rdv['date_heure_fin'],
+                        'duree' => (int)$rdv['duree'],
+                        'status' => (int)$rdv['status'],
+                        'motif_visite' => $rdv['motif_visite'],
+                        'date_creation' => $rdv['date_creation'],
+                        'praticien_id' => $praticien['id'],
+                        'praticien_nom' => $praticien['nom'],
+                        'praticien_prenom' => $praticien['prenom'],
+                        'praticien_specialite' => $specialite ?: null,
+                    ];
+                }
+            }
+
+            return $result;
+        } catch (\Throwable $e) {
+            if ($this->logger) {
+                $this->logger->error('PDORdvRepository: getRendezVousByPatientId failed', ['patient_id' => $patientId, 'err' => $e->getMessage()]);
+            }
+            return [];
         }
     }
 }

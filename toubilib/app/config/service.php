@@ -66,7 +66,7 @@ return [
     },
     
     AuthzServiceInterface::class => function (ContainerInterface $c) {
-        return new AuthzService();
+        return new AuthzService($c->get(RdvRepositoryInterface::class));
     },
 
 

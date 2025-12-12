@@ -35,4 +35,9 @@ interface AuthzServiceInterface
      * Vérifie si l'utilisateur peut supprimer un rendez-vous
      */
     public function canDeleteRdv(ProfileDTO $user, string $rdvId): bool;
+
+    /**
+     * Vérifie si l'utilisateur peut accéder à l'historique d'un patient
+     */
+    public function canAccessHistorique(ProfileDTO $user, string $patientId): bool;
 }
