@@ -43,4 +43,14 @@ interface RdvRepositoryInterface
      * @return array Tableau de rendez-vous avec informations praticien
      */
     public function getRendezVousByPatientId(string $patientId): array;
+
+    /**
+     * Vérifie si un praticien est indisponible sur une période donnée
+     * 
+     * @param string $praticienId ID du praticien
+     * @param \DateTimeImmutable $debut Date/heure de début
+     * @param \DateTimeImmutable $fin Date/heure de fin
+     * @return bool true si le praticien est indisponible (en congé, férié, etc.)
+     */
+    public function isPraticienIndisponible(string $praticienId, \DateTimeImmutable $debut, \DateTimeImmutable $fin): bool;
 }

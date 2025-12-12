@@ -130,6 +130,11 @@ class ServiceRendezVous implements ServiceRendezVousInterface
             return ['success' => false, 'code' => 'hour_not_allowed', 'message' => 'Horaire hors plage (08:00-19:00)'];
         }
 
+        // vérifier si le praticien est en indisponibilité (congés, férié, etc.)
+        if ($this->rdvRepository->isPraticienIndisponible($data['praticien_id'], $debut, $fin)) {
+            return ['success' => false, 'code' => 'praticien_indisponible', 'message' => 'Le praticien est indisponible sur cette période (congés, férié, etc.)'];
+        }
+
         // disponibilité 
         $from = $debut->format('Y-m-d 00:00:00');
         $to = $fin->format('Y-m-d 23:59:59');

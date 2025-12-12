@@ -225,6 +225,34 @@
 }
 ```
 
+### Test 9.1 : Création RDV - Créneau Occupé (Conflit)
+- **Note** : La vérification des indisponibilités vérifie automatiquement les créneaux déjà pris par le praticien
+- **Méthode** : `POST`
+- **URL** : `http://localhost:6080/rdvs`
+- **Headers** :
+  - `Content-Type: application/json`
+  - `Authorization: Bearer {token patient du Test 1}`
+- **Body (JSON)** :
+```json
+{
+  "praticien_id": "4305f5e9-be5a-4ccf-8792-7e07d7017363",
+  "patient_id": "a0000001-0000-4000-8000-000000000001",
+  "date_heure_debut": "2025-12-22T10:00:00",
+  "duree": 30,
+  "motif_visite": "scanner"
+}
+```
+- **Étape 1** : Créer un premier RDV avec les données ci-dessus → devrait retourner `201 Created`
+- **Étape 2** : Tenter de créer un deuxième RDV au même créneau ou qui chevauche
+- **Résultat attendu (étape 2)** : `400 Bad Request`
+```json
+{
+  "success": false,
+  "code": "praticien_unavailable",
+  "message": "Praticien indisponible pour ce créneau"
+}
+```
+
 ### Test 10 : Praticien Accède à son Agenda (Autorisé)
 - **Méthode** : `GET`
 - **URL** : `http://localhost:6080/praticiens/{id}/agenda`

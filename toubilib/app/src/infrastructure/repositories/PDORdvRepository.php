@@ -294,4 +294,53 @@ class PDORdvRepository implements RdvRepositoryInterface
             return [];
         }
     }
+
+    public function isPraticienIndisponible(string $praticienId, \DateTimeImmutable $debut, \DateTimeImmutable $fin): bool
+    {
+        if ($this->logger) {
+            $this->logger->debug('[PDORdvRepository] isPraticienIndisponible', [
+                'praticien_id' => $praticienId,
+                'debut' => $debut->format('Y-m-d H:i:s'),
+                'fin' => $fin->format('Y-m-d H:i:s')
+            ]);
+        }
+
+        // Vérifier les congés dans la table indisponibilite (si elle existe)
+        try {
+            $sql = '
+                SELECT COUNT(*) as count
+                FROM indisponibilite
+                WHERE praticien_id = :praticien_id
+                  AND (
+                    (date_debut <= :debut AND date_fin >= :debut)
+                    OR (date_debut <= :fin AND date_fin >= :fin)
+                    OR (date_debut >= :debut AND date_fin <= :fin)
+                  )
+            ';
+            
+            $stmt = $this->pdoPrat->prepare($sql);
+            $stmt->execute([
+                ':praticien_id' => $praticienId,
+                ':debut' => $debut->format('Y-m-d'),
+                ':fin' => $fin->format('Y-m-d'),
+            ]);
+            
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $count = (int)($result['count'] ?? 0);
+
+            if ($count > 0) {
+                if ($this->logger) {
+                    $this->logger->debug('PDORdvRepository: praticien indisponible (congés)', ['count' => $count]);
+                }
+                return true;
+            }
+        } catch (\PDOException $e) {
+            // Si la table n'existe pas, on ignore l'erreur
+            if ($this->logger) {
+                $this->logger->warning('PDORdvRepository: table indisponibilite inexistante', ['err' => $e->getMessage()]);
+            }
+        }
+
+        return false;
+    }
 }
