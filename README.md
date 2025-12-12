@@ -167,7 +167,7 @@
 ```
 
 ### Test 4.1 : Rafraîchissement du Token (Access Token Expiré)
-- **Note** : L'access token expire après **1 heure**. Le refresh token expire après **30 jours**.
+- **Note** : L'access token expire après **15 heure**. Le refresh token expire après **30 jours**.
 - **Méthode** : `POST`
 - **URL** : `http://localhost:6080/auth/refresh`
 - **Headers** : `Content-Type: application/json`
@@ -313,5 +313,3 @@
 | praticien2@test.com | password123 | Praticien (10) | b0000002-0000-4000-8000-000000000002 |
 | admin@test.com | password123 | Admin (100) | c0000001-0000-4000-8000-000000000001 |
 
-# Améliorations
-- rassembler les ini et env dans le .env dans /config
