@@ -74,4 +74,37 @@ class PDOPraticienRepository implements PraticienRepositoryInterface
             'adresse' => null,
         ];
     }
+
+    public function searchPraticiens(?int $specialiteId, ?string $ville): array
+    {
+        $sql = 'SELECT p.id, p.nom, p.prenom, p.ville, p.email, p.telephone, p.specialite_id, p.structure_id, p.rpps_id, p.organisation, p.nouveau_patient, p.titre FROM praticien p';
+        $conditions = [];
+        $params = [];
+
+        if ($specialiteId !== null) {
+            $conditions[] = 'p.specialite_id = :specialite_id';
+            $params['specialite_id'] = $specialiteId;
+        }
+
+        if ($ville !== null) {
+            $conditions[] = 'LOWER(p.ville) = LOWER(:ville)';
+            $params['ville'] = $ville;
+        }
+
+        if (!empty($conditions)) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        $sql .= ' ORDER BY p.nom, p.prenom';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $praticiens = [];
+        foreach ($results as $element) {
+            $praticiens[] = Praticien::fromArray($element);
+        }
+        return $praticiens;
+    }
 }

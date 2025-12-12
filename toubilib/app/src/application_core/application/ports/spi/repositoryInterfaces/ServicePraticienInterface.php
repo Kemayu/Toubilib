@@ -16,4 +16,13 @@ interface ServicePraticienInterface
     public function listerPraticiens(): array;
 
     public function getPraticienDetail(string $id): ?PraticienDetailDTO;
+
+    /**
+     * Recherche des praticiens selon des critères optionnels
+     *
+     * @param int|null $specialiteId Identifiant de la spécialité
+     * @param string|null $ville Ville d'exercice
+     * @return array Tableau de PraticienDTO
+     */
+    public function rechercherPraticiens(?int $specialiteId, ?string $ville): array;
 }

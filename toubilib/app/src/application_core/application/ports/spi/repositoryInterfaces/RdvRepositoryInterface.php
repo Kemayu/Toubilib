@@ -9,6 +9,14 @@ interface RdvRepositoryInterface
 
     public function findById(string $id): ?array;
 
+    /**
+     * Récupère un rendez-vous par son ID (alias de findById pour AuthzService)
+     * 
+     * @param string $id ID du rendez-vous
+     * @return array|null Tableau avec praticien_id et patient_id
+     */
+    public function getRendezVousById(string $id): ?array;
+
     public function saveRendezVous(array $data): ?string;
 
     public function existsPraticienById(string $praticienId): bool;
@@ -27,4 +35,12 @@ interface RdvRepositoryInterface
      * @return bool true si la mise à jour a réussi
      */
     public function updateStatus(string $id, int $status): bool;
+
+    /**
+     * Récupère l'historique des rendez-vous d'un patient
+     * 
+     * @param string $patientId ID du patient
+     * @return array Tableau de rendez-vous avec informations praticien
+     */
+    public function getRendezVousByPatientId(string $patientId): array;
 }

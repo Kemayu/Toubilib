@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use toubilib\api\actions\AnnulerRdvAction;
 use toubilib\api\actions\CreateRdvAction;
+use toubilib\api\actions\GetHistoriquePatientAction;
 use toubilib\api\actions\ListerPatientAction;
 use toubilib\api\actions\ListerPraticienAction;
 use toubilib\api\actions\ListerCreneauDejaPraticien;
@@ -31,28 +32,39 @@ return function (App $app): App {
     $app->get('/praticiens/{id}', PraticienDetailAction::class);
     $app->get('/patients', ListerPatientAction::class);
     $app->get('/patients/{id}', PatientDetailAction::class);
+    
+    // Opération 11: historique patient (authentification requise)
+    $app->get('/patients/{patientId}/consultations', GetHistoriquePatientAction::class)
+        ->setName('patient.consultations')
+        ->add(AuthzMiddleware::class)
+        ->add(AuthnMiddleware::class);
 
+    // Opération 7: agenda praticien (authentification requise)
     $app->get('/praticiens/{praticienId}/creneaux', ListerCreneauDejaPraticien::class)
         ->setName('agenda')
         ->add(AuthzMiddleware::class)
         ->add(AuthnMiddleware::class);
     
+    // Opération 4,6: consulter un RDV (authentification requise)
     $app->get('/rdvs/{id}', ListerRDVbyId::class)
         ->setName('rdv.get')
         ->add(AuthzMiddleware::class)
         ->add(AuthnMiddleware::class);
     
+    // Opération 6: créer un RDV (authentification requise - patient seulement)
     $app->post('/rdvs', CreateRdvAction::class)
         ->setName('rdv.create')
         ->add(ValidateInputRdv::class)
         ->add(AuthzMiddleware::class)
         ->add(AuthnMiddleware::class);
     
+    // Opération 5: annuler un RDV (authentification requise - patient du RDV seulement)
     $app->delete('/rdvs/{id}', AnnulerRdvAction::class)
         ->setName('rdv.delete')
         ->add(AuthzMiddleware::class)
         ->add(AuthnMiddleware::class);
 
+    // Opération 10: modifier statut RDV (authentification requise - praticien du RDV seulement)
     $app->patch('/rdvs/{id}', UpdateRdvStatusAction::class)
         ->setName('rdv.update')
         ->add(AuthzMiddleware::class)
