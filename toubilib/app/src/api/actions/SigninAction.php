@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace toubilib\core\application\actions;
+namespace toubilib\api\actions;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -9,7 +9,7 @@ use toubilib\core\application\ports\api\dto\CredentialsDTO;
 use toubilib\core\application\ports\api\provider\AuthProviderInterface;
 use toubilib\core\application\ports\api\provider\AuthProviderInvalidCredentialsException;
 
-class SigninAction
+class SigninAction extends AbstractAction
 {
     private AuthProviderInterface $authProvider;
 
@@ -20,7 +20,8 @@ class SigninAction
 
     public function __invoke(
         ServerRequestInterface $request,
-        ResponseInterface $response
+        ResponseInterface $response,
+        array $args
     ): ResponseInterface {
         try {
             $data = $request->getParsedBody();

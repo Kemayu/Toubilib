@@ -37,8 +37,37 @@ class ToubilibAuthnService implements ToubilibAuthnServiceInterface
         );
     }
 
-    public function register(CredentialsDTO $credentials, int $role): ProfileDTO
+    public function signup(CredentialsDTO $credentials, int $role): ProfileDTO
     {
-        throw new \RuntimeException('Registration not yet implemented');
+        // Validation de l'email
+        if (!filter_var($credentials->email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException('Invalid email format');
+        }
+
+        // Validation du mot de passe
+        if (strlen($credentials->password) < 8) {
+            throw new \InvalidArgumentException('Password must be at least 8 characters');
+        }
+
+        // Hash du mot de passe
+        $hashedPassword = password_hash($credentials->password, PASSWORD_BCRYPT);
+
+        if ($hashedPassword === false) {
+            throw new \RuntimeException('Failed to hash password');
+        }
+
+        // Création de l'utilisateur via le repository
+        $userId = $this->authRepository->createUser(
+            $credentials->email,
+            $hashedPassword,
+            $role
+        );
+
+        // Retourne le profil de l'utilisateur créé
+        return new ProfileDTO(
+            $userId,
+            $credentials->email,
+            $role
+        );
     }
 }

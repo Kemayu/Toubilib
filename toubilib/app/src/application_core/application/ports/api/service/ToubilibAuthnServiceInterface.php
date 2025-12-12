@@ -21,10 +21,10 @@ interface ToubilibAuthnServiceInterface
     public function byCredentials(CredentialsDTO $credentials): ProfileDTO;
 
     /**
-     * Enregistre un nouvel utilisateur
+     * Inscrit un nouvel utilisateur
      * @param CredentialsDTO $credentials Email et mot de passe
      * @param int $role Le rôle de l'utilisateur
      * @return ProfileDTO Le profil créé
      */
-    public function register(CredentialsDTO $credentials, int $role): ProfileDTO;
+    public function signup(CredentialsDTO $credentials, int $role): ProfileDTO;
 }

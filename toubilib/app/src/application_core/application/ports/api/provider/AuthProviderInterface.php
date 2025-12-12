@@ -19,7 +19,7 @@ interface AuthProviderInterface
      * @param int $role Le rôle de l'utilisateur (1=patient, 10=praticien, 100=admin)
      * @return ProfileDTO Le profil créé
      */
-    public function register(CredentialsDTO $credentials, int $role): ProfileDTO;
+    public function signup(CredentialsDTO $credentials, int $role): ProfileDTO;
 
     /**
      * Authentifie un utilisateur avec ses credentials

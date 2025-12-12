@@ -29,9 +29,9 @@ class JwtAuthProvider implements AuthProviderInterface
         $this->jwtManager = $jwtManager;
     }
 
-    public function register(CredentialsDTO $credentials, int $role): ProfileDTO
+    public function signup(CredentialsDTO $credentials, int $role): ProfileDTO
     {
-        return $this->authnService->register($credentials, $role);
+        return $this->authnService->signup($credentials, $role);
     }
 
     public function signin(CredentialsDTO $credentials): AuthDTO
