@@ -37,4 +37,24 @@ class ServicePraticien implements ServicePraticienInterface
         }
         return PraticienDetailDTO::fromArray($data);
     }
+
+    /**
+     * @return PraticienDTO[]
+     */
+    public function rechercherPraticiens(?int $specialiteId, ?string $ville): array
+    {
+        $praticiens = $this->praticienRepository->searchPraticiens($specialiteId, $ville);
+        $praticienDTO = [];
+        foreach($praticiens as $praticien){
+            $praticienDTO[] = new PraticienDTO(
+                $praticien->getId(), 
+                $praticien->getNom(), 
+                $praticien->getPrenom(),
+                $praticien->getVille(),
+                $praticien->getEmail(),
+                $praticien->getSpecialiteId()
+            );
+        }
+        return $praticienDTO;
+    }
 }

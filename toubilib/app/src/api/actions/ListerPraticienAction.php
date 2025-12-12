@@ -19,7 +19,19 @@ use toubilib\core\application\ports\spi\repositoryInterfaces\ServicePraticienInt
     }
 
     public function __invoke(ServerRequestInterface $rq, ResponseInterface $rs, array $args): ResponseInterface {
-        $praticiens = $this->praticienService->listerPraticiens();
+        // Récupérer les paramètres de requête
+        $queryParams = $rq->getQueryParams();
+        $specialiteId = isset($queryParams['specialite']) ? (int)$queryParams['specialite'] : null;
+        $ville = isset($queryParams['ville']) ? trim($queryParams['ville']) : null;
+
+        // Si au moins un critère est fourni, utiliser la recherche
+        if ($specialiteId !== null || ($ville !== null && $ville !== '')) {
+            $praticiens = $this->praticienService->rechercherPraticiens($specialiteId, $ville);
+        } else {
+            // Sinon, lister tous les praticiens
+            $praticiens = $this->praticienService->listerPraticiens();
+        }
+
         $praticiensArray = array_map(function(PraticienDTO $praticien) {
             return $praticien->toArray();
         }, $praticiens);
