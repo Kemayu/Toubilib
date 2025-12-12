@@ -49,7 +49,7 @@ return [
             $_ENV['JWT_SECRET'],
             'toubilib.api',
             'HS512',
-            3600,
+            900,
             2592000
         );
     },
