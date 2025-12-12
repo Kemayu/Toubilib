@@ -8,10 +8,11 @@ use toubilib\core\application\ports\spi\repositoryInterfaces\ServiceRendezVousIn
 use toubilib\api\actions\ListerRDVbyId;
 use toubilib\api\actions\CreateRdvAction;
 use toubilib\api\actions\AnnulerRdvAction;
+use toubilib\api\actions\SigninAction;
 use toubilib\api\middlewares\ValidateInputRdv;
 use toubilib\api\middlewares\Cors;
 
-use toubilib\core\application\actions\SigninAction;
+
 use toubilib\core\application\middlewares\AuthnMiddleware;
 use toubilib\core\application\middlewares\AuthzMiddleware;
 use toubilib\core\application\ports\api\provider\AuthProviderInterface;
