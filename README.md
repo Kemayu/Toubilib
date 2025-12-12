@@ -166,6 +166,48 @@
 }
 ```
 
+### Test 4.1 : Rafraîchissement du Token (Access Token Expiré)
+- **Note** : L'access token expire après **1 heure**. Le refresh token expire après **30 jours**.
+- **Méthode** : `POST`
+- **URL** : `http://localhost:6080/auth/refresh`
+- **Headers** : `Content-Type: application/json`
+- **Body (JSON)** :
+```json
+{
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}
+```
+- **Résultat attendu** : `200 OK`
+```json
+{
+  "profile": {
+    "id": "a0000001-0000-4000-8000-000000000001",
+    "email": "patient1@test.com",
+    "role": 1,
+    "role_label": "patient"
+  },
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc... (nouveau token)",
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGc... (nouveau token)"
+}
+```
+- **Action** : Utiliser le nouveau `access_token` pour les requêtes suivantes
+
+### Test 4.2 : Rafraîchissement Échoué (Refresh Token Invalide)
+- **Méthode** : `POST`
+- **URL** : `http://localhost:6080/auth/refresh`
+- **Body (JSON)** :
+```json
+{
+  "refresh_token": "invalid_token"
+}
+```
+- **Résultat attendu** : `401 Unauthorized`
+```json
+{
+  "error": "Invalid refresh token"
+}
+```
+
 ## Tests d'Authentification Middleware
 
 ### Test 5 : Accès sans Token
